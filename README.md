@@ -1,2 +1,2 @@
-# Audio-Nornalizer
+# Audio-Normalizer
 Handling Batch Audio Files
