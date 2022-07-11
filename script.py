@@ -2,11 +2,6 @@
 
 import os
 
-os.system("python3 -m pip install eyed3")
-os.system("pkg install ffmpeg")
-os.system("python3 -m pip install re")
-
-
 import eyed3
 import re
 from sys import argv as params
