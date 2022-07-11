@@ -12,6 +12,7 @@ Handling Batch Audio Files
 
 - ffmpeg
 - eyed3
+- re
 
 
 ## Socials
