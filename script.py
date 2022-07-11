@@ -3,6 +3,9 @@
 import os
 import eyed3
 import re
+from sys import argv as params
+
+params.pop(0)
 
 # change directory. 
 # Directory must be existing
@@ -200,6 +203,10 @@ for file in getFiles(paths["input"], s):
         "\"%s\"" % b
     ])
     
+    
+    os.remove("%s.wav" % sample)
+    os.remove("ffmpeg_volumedetect.txt")
+    
     if res:
         suc.append({
             "title" : file,
@@ -210,9 +217,6 @@ for file in getFiles(paths["input"], s):
         continue
     
     setLyrics(b, lyric, lrcFile)
-    
-    os.remove("%s.wav" % sample)
-    os.remove("ffmpeg_volumedetect.txt")
     
 
 print("Decibels Adjustment")
