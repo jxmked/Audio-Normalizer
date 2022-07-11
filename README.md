@@ -8,7 +8,8 @@ Handling Batch Audio Files
 - Increase or Decrease volume automatically to normalize it
 - 192k bitrate , mp3 (libmp3lame) output
 - Re-encoding audio file
-- 
+
+
 ### Requires
 
 - ffmpeg
