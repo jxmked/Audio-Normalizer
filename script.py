@@ -7,11 +7,11 @@ import re
 # change directory. 
 # Directory must be existing
 paths = {
-    "input" : "/storage/emulated/0/Music/",
-    "output" : "/storage/emulated/0/@Workers/Out/",
-    "metadata" : "/storage/emulated/0/@Workers/metas/",
-    "lyrics" : "/storage/emulated/0/@Workers/lyrics/",
-    "albumArt" : "/storage/emulated/0/@Workers/Album Art"
+    "input" : "Input",
+    "output" : "Output",
+    "metadata" : "Metadata",
+    "lyrics" : "Lyrics",
+    "albumArt" : "Album Cover"
 }
 
 def getFiles(dirIn, types):
@@ -221,7 +221,7 @@ for con in suc:
     print("  Decibels: %s" % con["decibels"])
     print()
 
-fopen = open(os.path.join("/storage/emulated/0/@Workers", "errors.txt"), "w")
+fopen = open("errors.txt", "w")
 
 fopen.write("\n".join(err))
 
