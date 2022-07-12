@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import os
-
 import eyed3
 import re
 from sys import argv as params
@@ -46,7 +45,7 @@ def getLyrics(file):
     
     try:
         return audiofile.tag.lyrics[0].text
-    except IndexError:
+    except (IndexError, AttributeError):
         return ""
 
 def setLyrics(file, lyric, lrcOut):
@@ -64,10 +63,10 @@ def filename(path):
 def execute(arr, s=1):
     if not s:
         return
-    print("")
-    print("-+" * 8, end="-\n")
-    print(" ".join(arr))
-    print("-+" * 8, end="-\n")
+    print(flush=True)
+    print("-+" * 8, end="-\n", flush=True)
+    print(" ".join(arr), flush=True)
+    print("-+" * 8, end="-\n", flush=True)
     return os.system(" ".join(arr)) == 0
     
 def getNormalize(num):
@@ -78,6 +77,7 @@ def getNormalize(num):
 # Copy those text here and rerun
 s = """
 .mp3
+.mp4
 """
 
 # Remove empty value from array
@@ -98,7 +98,7 @@ for file in getFiles(paths["input"], s):
     a = os.path.join(paths["input"], file)
     
     # Output folder
-    b = os.path.join(paths["output"], file)
+    b = os.path.join(paths["output"], fn)
     
     # Output lrc File
     lrcFile = os.path.join(paths["lyrics"], "%s.lrc" % fn)
@@ -126,7 +126,7 @@ for file in getFiles(paths["input"], s):
         exit(1)
     
     # Get Album Art
-    res = execute([
+    hasAlbumCover = execute([
         "ffmpeg -y",
         "-nostdin -hide_banner",
         "-i \"%s\"" % a,
@@ -134,8 +134,8 @@ for file in getFiles(paths["input"], s):
         "\"%s\"" % albumArt
     ])
     
-    if not res:
-        exit(1)
+    if not hasAlbumCover:
+        os.remove(albumArt) # Empty file
     
     f = open("ffmpeg_volumedetect.txt", "r")
     s = f.read()
@@ -187,22 +187,29 @@ for file in getFiles(paths["input"], s):
     if not res:
         exit(1)
     
-    # Insert Metadata and Convert to MP3
-    res = execute([
+    
+    toMp3Cmd = [
         "ffmpeg -y", # Overwrite Existing File
         "-nostdin -hide_banner", # Disable Inputs abd Hide Banner
         "-i \"%s.wav\"" % sample, # Import Audio File
         "-i \"%s\"" % metadata, # Import Metadata
-        "-i \"%s\"" % albumArt, # Import Album Art
-        "-map 0:0 -map 2:0", # Mapping Audio File and Album Art
         "-id3v2_version 3", # Force ID3 version
-        "-metadata:s:v title=\"Album cover\"", # Inserting Title to Album Art
-        "-metadata:s:v comment=\"Cover (front)\"", # Setting up Album Art
         "-c:a libmp3lame", # MP3 Lossy Codec
+        "-f mp3",
         "-b:a 192k", # Medium Bitrate
         "-map_metadata 1", # Inserting Metadata
-        "\"%s\"" % b
-    ])
+        "\"%s.mp3\"" % b
+    ]
+    if hasAlbumCover:
+        toMp3Cmd.insert(4, " ".join([
+            "-i \"%s\"" % albumArt, # Import Album Art
+            "-map 0:0 -map 2:0", # Mapping Audio File and Album Art
+            "-metadata:s:v title=\"Album cover\"", # Inserting Title to Album Art
+            "-metadata:s:v comment=\"Cover (front)\"", # Setting up Album Art
+        ]))
+    
+    # Insert Metadata and Convert to MP3
+    res = execute(toMp3Cmd)
     
     
     os.remove("%s.wav" % sample)
@@ -217,14 +224,14 @@ for file in getFiles(paths["input"], s):
         err.append(file)
         continue
     
-    setLyrics(b, lyric, lrcFile)
+    setLyrics("%s.mp3" % b, lyric, lrcFile)
     
 
-print("Decibels Adjustment")
+print("Decibels Adjustment", flush=True)
 for con in suc:
-    print("  File: %s" % con["title"])
-    print("  Decibels: %s" % con["decibels"])
-    print()
+    print("  File: %s" % con["title"],flush=True)
+    print("  Decibels: %s" % con["decibels"],flush=True)
+    print(flush=True)
 
 fopen = open("errors.txt", "w")
 
