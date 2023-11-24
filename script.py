@@ -3,9 +3,6 @@
 import os
 import eyed3
 import re
-from sys import argv as params
-
-params.pop(0)
 
 # change directory. 
 # Directory must be existing
@@ -16,6 +13,12 @@ paths = {
     "lyrics" : "Lyrics",
     "albumArt" : "Album Cover"
 }
+
+
+MIN_SILENCE="-100dB"
+
+BIT_RATE="128k"
+
 
 def getFiles(dirIn, types):
     # From Time-Lapse v3.0 (Not yet finish)
@@ -33,7 +36,7 @@ def getFiles(dirIn, types):
 def createSilenceRemoveFilter(cnt):
     # From Time-Lapse v3.0 (Not yet finish)
     pat = "{0},{1},{0},{1}".format(
-        "silenceremove=start_periods=%s:start_silence=%s:start_threshold=%s" % (1 ,0.1, "-50dB"),
+        "silenceremove=start_periods=%s:start_silence=%s:start_threshold=%s" % (1 ,0.1, MIN_SILENCE),
         "areverse"
     )
     
@@ -112,6 +115,8 @@ for file in getFiles(paths["input"], s):
     lyric = getLyrics(a)
     
     # Create Tmp text file contains Information about audio
+    
+  
     res = execute([
         "ffmpeg",
         "-nostdin -hide_banner",
@@ -135,7 +140,10 @@ for file in getFiles(paths["input"], s):
     ])
     
     if not hasAlbumCover:
-        os.remove(albumArt) # Empty file
+      try:
+          os.remove(albumArt) # Empty file
+      except:
+          pass
     
     f = open("ffmpeg_volumedetect.txt", "r")
     s = f.read()
@@ -196,7 +204,7 @@ for file in getFiles(paths["input"], s):
         "-id3v2_version 3", # Force ID3 version
         "-c:a libmp3lame", # MP3 Lossy Codec
         "-f mp3",
-        "-b:a 192k", # Medium Bitrate
+        "-b:a %s" ^ BIT_RATE, # Medium Bitrate
         "-map_metadata 1", # Inserting Metadata
         "\"%s.mp3\"" % b
     ]
