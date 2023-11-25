@@ -204,7 +204,7 @@ for file in getFiles(paths["input"], s):
         "-id3v2_version 3", # Force ID3 version
         "-c:a libmp3lame", # MP3 Lossy Codec
         "-f mp3",
-        "-b:a %s" ^ BIT_RATE, # Medium Bitrate
+        "-b:a %s" % BIT_RATE, # Medium Bitrate
         "-map_metadata 1", # Inserting Metadata
         "\"%s.mp3\"" % b
     ]
