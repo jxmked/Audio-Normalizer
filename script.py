@@ -3,6 +3,9 @@
 import os
 import eyed3
 import re
+import sys
+
+sys.path.append(os.path.abspath("C:/Users/De Guia/.platformio/penv"))
 
 # change directory. 
 # Directory must be existing
@@ -123,9 +126,12 @@ for file in getFiles(paths["input"], s):
         "-i \"%s\"" % a,
         "-af 'volumedetect'",
         "-vn -sn -dn",
-        "-f null /dev/null",
-        "&> ffmpeg_volumedetect.txt"
+        "-f null NUL > ffmpeg_volumedetect.txt 2>&1"
     ])
+    
+
+    
+    
     
     if not res:
         exit(1)
@@ -184,7 +190,7 @@ for file in getFiles(paths["input"], s):
         "-i \"%s\"" % a,
         
         # Trim Both End
-        "-af '%s%s'" % (createSilenceRemoveFilter(1), vlm),
+        "-filter:a \"%s%s\"" % (createSilenceRemoveFilter(1), vlm),
         
         # Remove All Metadata
         "-write_xing 0 -id3v2_version 0",
